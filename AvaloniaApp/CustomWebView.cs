@@ -3,7 +3,12 @@ using CefNet.Avalonia;
 using CefNet.Internal;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
+using Avalonia;
+using Avalonia.Input;
+using Avalonia.Input.TextInput;
+using Avalonia.VisualTree;
 
 namespace AvaloniaApp
 {
@@ -17,7 +22,9 @@ namespace AvaloniaApp
 			remove { RemoveHandler(FullscreenEvent, value); }
 		}
 
-		public CustomWebView()
+		private ImClientStub _im;
+
+		public CustomWebView() : this(null)
 		{
 
 		}
@@ -25,7 +32,13 @@ namespace AvaloniaApp
 		public CustomWebView(WebView opener)
 			: base(opener)
 		{
+			_im = new ImClientStub(this);
 
+			AddHandler(TextInputMethodClientRequestedEvent, (_, e) =>
+			{
+				Console.WriteLine("IME requested");
+				e.Client = _im;
+			});
 		}
 
 		protected override WebViewGlue CreateWebViewGlue()
